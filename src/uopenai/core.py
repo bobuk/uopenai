@@ -77,6 +77,9 @@ class OpenAI:
         response = await self.call("chat/completions", Answer, req)
         return response
 
-    async def easy_complete(self, prompt: str, **kwargs) -> Answer:
-        messages = [Message(role="system", content=prompt)]
+    async def easy_complete(self, prompt: str, system_prompt: Optional[str] = None, **kwargs) -> Answer:
+        if system_prompt:
+            messages = [Message(role="system", content=system_prompt), Message(role="user", content=prompt)]
+        else:
+            messages = [Message(role="user", content=prompt)]
         return await self.complete(messages, **kwargs)
