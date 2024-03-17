@@ -63,66 +63,23 @@ async def test_complete_with_multiple_messages():
     assert response.choices[0].message.content is not None
 
 @pytest.mark.asyncio
-async def test_easy_complete_with_valid_prompts():
+async def test_complete_with_json_response_format():
     openai = OpenAI(api_key=get_key())
-    prompt = "Tell me a fun fact about the ocean."
-    system_prompt = "You are a knowledgeable bot."
+    messages = [
+        Message(role="system", content="You are a chatbot."),
+        Message(role="user", content="Can you provide a JSON formatted response?")
+    ]
 
-    response = await openai.easy_complete(prompt, system_prompt=system_prompt, model="gpt-4-turbo-preview")
-
-    assert isinstance(response, Answer)
-    assert response.choices[0].message.content is not None
-    assert "ocean" in response.choices[0].message.content
+    response = await openai.complete(messages, model="gpt-4-turbo-preview", json=True)
+    print(response.choices[0].json)
 
 @pytest.mark.asyncio
-async def test_easy_complete_without_system_prompt():
+async def test_easy_complete_with_json():
     openai = OpenAI(api_key=get_key())
-    prompt = "What's the weather like today?"
-
-    response = await openai.easy_complete(prompt, model="gpt-4-turbo-preview")
-
-    assert isinstance(response, Answer)
-    assert response.choices[0].message.content is not None
-
-@pytest.mark.asyncio
-async def test_easy_complete_with_empty_prompt():
-    openai = OpenAI(api_key=get_key())
-
-    # must work
-    response = await openai.easy_complete("", model="gpt-4-turbo-preview")
-
-@pytest.mark.asyncio
-async def test_easy_complete_with_invalid_model():
-    openai = OpenAI(api_key=get_key())
-    prompt = "What is the capital of France?"
-
-    with pytest.raises(OpenAIError):
-        response = await openai.easy_complete(prompt, model="invalid-model")
-
-@pytest.mark.asyncio
-async def test_easy_complete_with_additional_kwargs():
-    openai = OpenAI(api_key=get_key())
-    prompt = "Write a poem about a sunset."
-    system_prompt = "You are a creative bot."
-    kwargs = {'max_tokens': 50, 'temperature': 0.7}
-
-    response = await openai.easy_complete(prompt, system_prompt=system_prompt, **kwargs, model="gpt-4-turbo-preview")
-
-    assert isinstance(response, Answer)
-    assert response.choices[0].message.content is not None
-    assert len(response.choices[0].message.content.split()) <= 50
-
-@pytest.mark.asyncio
-async def test_easy_complete_translate():
-    openai = OpenAI(api_key=get_key())
-    prompt = "Translate 'Hello, how are you?' into Spanish."
-    system_prompt = "You are a multilingual bot."
-
-    response = await openai.easy_complete(prompt, system_prompt=system_prompt, model="gpt-4-turbo-preview")
-
-    assert isinstance(response, Answer)
-    assert response.choices[0].message.content is not None
-    assert "Hola" in response.choices[0].message.content
+    response = await openai.easy_complete("what is the capital of France? answer in JSON, put the name in `capital`", json=True)
+    assert isinstance(response, dict)
+    assert "capital" in response
+    assert response["capital"] == "Paris"
 
 if __name__ == '__main__':
     import httpx
@@ -133,4 +90,5 @@ if __name__ == '__main__':
     #     level=logging.DEBUG
     # )
 
-    asyncio.run(test_complete())
+    asyncio.run(test_complete_with_json_response_format())
+    # asyncio.run(test_complete())

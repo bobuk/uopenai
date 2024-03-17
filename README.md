@@ -34,6 +34,9 @@ async def main():
 
     res = await api.easy_complete("What’s on your mind?", "You are a chat bot")
 
+    res = await api.easy_complete("What’s on your mind?",
+                    "You are a JSON answering machine, give the answer in JSON only.", json=True)
+
 if __name__ == "__main__":
     asyncio.run(main())
 ```
