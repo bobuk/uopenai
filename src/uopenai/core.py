@@ -19,7 +19,7 @@ class Choice(BaseModel):
     finish_reason: Optional[str]
 
     @property
-    def json(self) -> Optional[dict]:
+    def parsed(self) -> Optional[dict]:
         if not self.message:
             return None
         try:
@@ -101,7 +101,7 @@ class OpenAI:
         if not answer.choices:
             raise OpenAIError("No response from OpenAI")
         if 'json' in kwargs and kwargs['json']:
-            dict_result = answer.choices[0].json
+            dict_result = answer.choices[0].parsed
             if not dict_result:
                 raise OpenAIError("No JSON response from OpenAI")
             return dict_result

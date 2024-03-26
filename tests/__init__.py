@@ -71,7 +71,7 @@ async def test_complete_with_json_response_format():
     ]
 
     response = await openai.complete(messages, model="gpt-4-turbo-preview", json=True)
-    print(response.choices[0].json)
+    print(response.choices[0].parsed)
 
 @pytest.mark.asyncio
 async def test_easy_complete_with_json():
