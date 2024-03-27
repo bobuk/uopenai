@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional, List, Type, TypeVar
 from datetime import datetime
 from pydantic import BaseModel
 from copy import deepcopy
-from json import loads, dumps
+from json import JSONDecodeError, loads, dumps
 OAI_V1 = "https://api.openai.com/v1/"
 
 T = TypeVar('T', bound=BaseModel)
@@ -24,7 +24,9 @@ class Choice(BaseModel):
             return None
         try:
             return loads(self.message.content)
-        except:
+        except JSONDecodeError as e:
+            if self.message.content.startswith("```json"):
+                return loads(self.message.content.replace("```json", "").replace("```", ""))
             return None
 
 
