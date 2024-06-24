@@ -42,7 +42,7 @@ class Answer(BaseModel):
     choices: List[Choice]
     created: datetime
     model: str
-    system_fingerprint: str
+    system_fingerprint: Optional[str]
     usage: Usage
 
 
